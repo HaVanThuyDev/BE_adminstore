@@ -3,11 +3,11 @@ const { hashPassword } = require('../utils/helpers');
 
 const seedData = async () => {
   // 1. Seed Super Admin mặc định
-  const adminExists = await getOne('SELECT id FROM users WHERE email = ?', ['admin@2ht.vn']);
+  const adminExists = await getOne('SELECT ID FROM USERS WHERE EMAIL = ?', ['admin@2ht.vn']);
   if (!adminExists) {
     const hashedPassword = await hashPassword('Password@2026');
     await query(
-      `INSERT INTO users (id, email, password, fullName, phone, role, status)
+      `INSERT INTO USERS (ID, EMAIL, PASSWORD, FULL_NAME, PHONE, ROLE, STATUS)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       ['usr-admin-01', 'admin@2ht.vn', hashedPassword, 'Quản Trị Viên 2HT', '0383717785', 'SUPER_ADMIN', 'ACTIVE']
     );
@@ -15,7 +15,7 @@ const seedData = async () => {
   }
 
   // 2. Seed Cấu hình hệ thống (Site Settings)
-  const settingsExists = await getOne('SELECT id FROM site_settings WHERE id = 1');
+  const settingsExists = await getOne('SELECT ID FROM SITE_SETTINGS WHERE ID = 1');
   if (!settingsExists) {
     const socialLinks = JSON.stringify({
       facebook: 'https://facebook.com',
@@ -24,7 +24,7 @@ const seedData = async () => {
       youtube: 'https://youtube.com',
     });
     await query(
-      `INSERT INTO site_settings (id, brandName, brandSubname, slogan, mainMessage, contactEmail, supportEmail, hotline, address, workingHours, socialLinks, copyrightText)
+      `INSERT INTO SITE_SETTINGS (ID, BRAND_NAME, BRAND_SUBNAME, SLOGAN, MAIN_MESSAGE, CONTACT_EMAIL, SUPPORT_EMAIL, HOTLINE, ADDRESS, WORKING_HOURS, SOCIAL_LINKS, COPYRIGHT_TEXT)
        VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         '2HT',
@@ -44,8 +44,8 @@ const seedData = async () => {
   }
 
   // 3. Seed 26 Tiêu đề website (Site Headings)
-  const headingRow = await getOne('SELECT COUNT(id) as count FROM site_headings');
-  if (headingRow.count === 0) {
+  const headingRow = await getOne('SELECT COUNT(ID) as count FROM SITE_HEADINGS');
+  if (!headingRow || headingRow.count === 0) {
     const initialHeadings = [
       { id: 'heading-01', key: 'home_hero_eyebrow', section: 'Hero Banner', label: 'Eyebrow nhỏ phía trên tiêu đề chính', value: '2HT INFORMATION TECHNOLOGY', type: 'eyebrow', page: 'Trang chủ' },
       { id: 'heading-02', key: 'home_hero_title_1', section: 'Hero Banner', label: 'Tiêu đề chính (dòng 1)', value: 'Kiến tạo giải pháp số.', type: 'heading', page: 'Trang chủ' },
@@ -77,7 +77,7 @@ const seedData = async () => {
 
     for (const h of initialHeadings) {
       await query(
-        `INSERT INTO site_headings (id, \`key\`, section, label, value, type, page)
+        `INSERT INTO SITE_HEADINGS (ID, \`KEY\`, SECTION, LABEL, VALUE, TYPE, PAGE)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [h.id, h.key, h.section, h.label, h.value, h.type, h.page]
       );
@@ -86,8 +86,8 @@ const seedData = async () => {
   }
 
   // 4. Seed Blogs
-  const blogRow = await getOne('SELECT COUNT(id) as count FROM blogs');
-  if (blogRow.count === 0) {
+  const blogRow = await getOne('SELECT COUNT(ID) as count FROM BLOGS');
+  if (!blogRow || blogRow.count === 0) {
     const initialBlogs = [
       {
         id: 'blog-01',
@@ -139,7 +139,7 @@ Bằng cách container hóa từng dịch vụ thông qua Docker, quy trình CI/
 
     for (const b of initialBlogs) {
       await query(
-        `INSERT INTO blogs (id, slug, title, excerpt, content, category, tags, authorName, authorRole, authorAvatar, publishedAt, readTime, coverImage, isFeatured)
+        `INSERT INTO BLOGS (ID, SLUG, TITLE, EXCERPT, CONTENT, CATEGORY, TAGS, AUTHOR_NAME, AUTHOR_ROLE, AUTHOR_AVATAR, PUBLISHED_AT, READ_TIME, COVER_IMAGE, IS_FEATURED)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
           b.id,
@@ -163,8 +163,8 @@ Bằng cách container hóa từng dịch vụ thông qua Docker, quy trình CI/
   }
 
   // 5. Seed Products
-  const prodRow = await getOne('SELECT COUNT(id) as count FROM products');
-  if (prodRow.count === 0) {
+  const prodRow = await getOne('SELECT COUNT(ID) as count FROM PRODUCTS');
+  if (!prodRow || prodRow.count === 0) {
     const prods = [
       {
         id: 'prod-01',
@@ -209,7 +209,7 @@ Bằng cách container hóa từng dịch vụ thông qua Docker, quy trình CI/
 
     for (const p of prods) {
       await query(
-        `INSERT INTO products (id, name, slug, tagline, category, categoryName, basePrice, description, techStack, featuredBadge, mockupType)
+        `INSERT INTO PRODUCTS (ID, NAME, SLUG, TAGLINE, CATEGORY, CATEGORY_NAME, BASE_PRICE, DESCRIPTION, TECH_STACK, FEATURED_BADGE, MOCKUP_TYPE)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [p.id, p.name, p.slug, p.tagline, p.category, p.categoryName, p.basePrice, p.description, p.techStack, p.featuredBadge, p.mockupType]
       );

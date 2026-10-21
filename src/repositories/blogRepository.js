@@ -2,23 +2,23 @@ const { getOne, query } = require('../config/database');
 
 class BlogRepository {
   async findAll({ search, category, tag, limit } = {}) {
-    let sql = 'SELECT * FROM blogs WHERE 1=1';
+    let sql = 'SELECT * FROM BLOGS WHERE 1=1';
     const params = [];
 
     if (search) {
-      sql += ' AND (title LIKE ? OR excerpt LIKE ?)';
+      sql += ' AND (TITLE LIKE ? OR EXCERPT LIKE ?)';
       params.push(`%${search}%`, `%${search}%`);
     }
     if (category) {
-      sql += ' AND category = ?';
+      sql += ' AND CATEGORY = ?';
       params.push(category);
     }
     if (tag) {
-      sql += ' AND JSON_CONTAINS(tags, ?)';
+      sql += ' AND JSON_CONTAINS(TAGS, ?)';
       params.push(JSON.stringify(tag));
     }
 
-    sql += ' ORDER BY publishedAt DESC, createdAt DESC';
+    sql += ' ORDER BY PUBLISHED_AT DESC, CREATED_AT DESC';
     if (limit) {
       sql += ' LIMIT ?';
       params.push(Number(limit));
@@ -28,11 +28,11 @@ class BlogRepository {
   }
 
   async findById(id) {
-    return getOne('SELECT * FROM blogs WHERE id = ?', [id]);
+    return getOne('SELECT * FROM BLOGS WHERE ID = ?', [id]);
   }
 
   async findBySlug(slug) {
-    return getOne('SELECT * FROM blogs WHERE slug = ?', [slug]);
+    return getOne('SELECT * FROM BLOGS WHERE SLUG = ?', [slug]);
   }
 
   async create(blog) {
@@ -54,7 +54,7 @@ class BlogRepository {
     } = blog;
 
     await query(
-      `INSERT INTO blogs (id, title, slug, excerpt, content, category, tags, authorName, authorRole, authorAvatar, publishedAt, readTime, coverImage, isFeatured)
+      `INSERT INTO BLOGS (ID, TITLE, SLUG, EXCERPT, CONTENT, CATEGORY, TAGS, AUTHOR_NAME, AUTHOR_ROLE, AUTHOR_AVATAR, PUBLISHED_AT, READ_TIME, COVER_IMAGE, IS_FEATURED)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
@@ -94,10 +94,10 @@ class BlogRepository {
     } = blog;
 
     await query(
-      `UPDATE blogs SET
-        title = ?, slug = ?, excerpt = ?, content = ?, category = ?, tags = ?,
-        authorName = ?, authorRole = ?, authorAvatar = ?, publishedAt = ?, readTime = ?, coverImage = ?
-       WHERE id = ?`,
+      `UPDATE BLOGS SET
+        TITLE = ?, SLUG = ?, EXCERPT = ?, CONTENT = ?, CATEGORY = ?, TAGS = ?,
+        AUTHOR_NAME = ?, AUTHOR_ROLE = ?, AUTHOR_AVATAR = ?, PUBLISHED_AT = ?, READ_TIME = ?, COVER_IMAGE = ?
+       WHERE ID = ?`,
       [
         title,
         slug,
@@ -120,12 +120,12 @@ class BlogRepository {
 
   async toggleFeatured(id, currentStatus) {
     const newStatus = currentStatus ? 0 : 1;
-    await query('UPDATE blogs SET isFeatured = ? WHERE id = ?', [newStatus, id]);
+    await query('UPDATE BLOGS SET IS_FEATURED = ? WHERE ID = ?', [newStatus, id]);
     return Boolean(newStatus);
   }
 
   async delete(id) {
-    const res = await query('DELETE FROM blogs WHERE id = ?', [id]);
+    const res = await query('DELETE FROM BLOGS WHERE ID = ?', [id]);
     return res.affectedRows > 0;
   }
 }

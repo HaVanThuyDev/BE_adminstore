@@ -2,34 +2,34 @@ const { getOne, query } = require('../config/database');
 
 class HeadingRepository {
   async findAll({ page, section } = {}) {
-    let sql = 'SELECT * FROM site_headings WHERE 1=1';
+    let sql = 'SELECT * FROM SITE_HEADINGS WHERE 1=1';
     const params = [];
 
     if (page) {
-      sql += ' AND page = ?';
+      sql += ' AND PAGE = ?';
       params.push(page);
     }
     if (section) {
-      sql += ' AND section = ?';
+      sql += ' AND SECTION = ?';
       params.push(section);
     }
 
-    sql += ' ORDER BY page ASC, section ASC, id ASC';
+    sql += ' ORDER BY PAGE ASC, SECTION ASC, ID ASC';
     return query(sql, params);
   }
 
   async findById(id) {
-    return getOne('SELECT * FROM site_headings WHERE id = ?', [id]);
+    return getOne('SELECT * FROM SITE_HEADINGS WHERE ID = ?', [id]);
   }
 
   async findByKey(key) {
-    return getOne('SELECT * FROM site_headings WHERE `key` = ?', [key]);
+    return getOne('SELECT * FROM SITE_HEADINGS WHERE `KEY` = ?', [key]);
   }
 
   async create(heading) {
     const { id, key, section, label, value, type, page } = heading;
     await query(
-      `INSERT INTO site_headings (id, \`key\`, section, label, value, type, page)
+      `INSERT INTO SITE_HEADINGS (ID, \`KEY\`, SECTION, LABEL, VALUE, TYPE, PAGE)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [id, key, section, label, value, type, page]
     );
@@ -37,23 +37,23 @@ class HeadingRepository {
   }
 
   async updateValue(id, value) {
-    await query('UPDATE site_headings SET value = ? WHERE id = ?', [value, id]);
+    await query('UPDATE SITE_HEADINGS SET VALUE = ? WHERE ID = ?', [value, id]);
     return this.findById(id);
   }
 
   async update(id, heading) {
     const { key, section, label, value, type, page } = heading;
     await query(
-      `UPDATE site_headings SET
-        \`key\` = ?, section = ?, label = ?, value = ?, type = ?, page = ?
-       WHERE id = ?`,
+      `UPDATE SITE_HEADINGS SET
+        \`KEY\` = ?, SECTION = ?, LABEL = ?, VALUE = ?, TYPE = ?, PAGE = ?
+       WHERE ID = ?`,
       [key, section, label, value, type, page, id]
     );
     return this.findById(id);
   }
 
   async delete(id) {
-    const res = await query('DELETE FROM site_headings WHERE id = ?', [id]);
+    const res = await query('DELETE FROM SITE_HEADINGS WHERE ID = ?', [id]);
     return res.affectedRows > 0;
   }
 }

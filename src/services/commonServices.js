@@ -50,19 +50,31 @@ class ConsultationService {
   }
 }
 
+const parseJsonSafe = (val, defaultVal = {}) => {
+  if (typeof val === 'object' && val !== null) return val;
+  if (typeof val === 'string') {
+    try {
+      return JSON.parse(val);
+    } catch {
+      return defaultVal;
+    }
+  }
+  return defaultVal;
+};
+
 class SettingService {
   async getSettings() {
     const settings = await settingRepository.getSettings();
     if (!settings) return null;
     return {
       ...settings,
-      socialLinks: JSON.parse(settings.socialLinks || '{}'),
+      socialLinks: parseJsonSafe(settings.socialLinks, {}),
     };
   }
 
   async updateSettings(data) {
     const current = await settingRepository.getSettings();
-    const socialLinks = data.socialLinks ? JSON.stringify(data.socialLinks) : current.socialLinks;
+    const socialLinks = data.socialLinks ? JSON.stringify(data.socialLinks) : (typeof current.socialLinks === 'string' ? current.socialLinks : JSON.stringify(current.socialLinks || {}));
 
     const payload = {
       brandName: data.brandName || current.brandName,
@@ -81,7 +93,7 @@ class SettingService {
     const updated = await settingRepository.updateSettings(payload);
     return {
       ...updated,
-      socialLinks: JSON.parse(updated.socialLinks || '{}'),
+      socialLinks: parseJsonSafe(updated.socialLinks, {}),
     };
   }
 

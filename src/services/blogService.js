@@ -1,12 +1,25 @@
 const blogRepository = require('../repositories/blogRepository');
 const { slugify } = require('../utils/helpers');
 
+const parseJsonSafe = (val, defaultVal = []) => {
+  if (Array.isArray(val)) return val;
+  if (typeof val === 'object' && val !== null) return val;
+  if (typeof val === 'string') {
+    try {
+      return JSON.parse(val);
+    } catch {
+      return defaultVal;
+    }
+  }
+  return defaultVal;
+};
+
 class BlogService {
   async getAllBlogs(query = {}) {
     const rows = await blogRepository.findAll(query);
     return rows.map((r) => ({
       ...r,
-      tags: JSON.parse(r.tags || '[]'),
+      tags: parseJsonSafe(r.tags, []),
       isFeatured: Boolean(r.isFeatured),
       author: {
         name: r.authorName,
@@ -23,7 +36,7 @@ class BlogService {
     }
     return {
       ...blog,
-      tags: JSON.parse(blog.tags || '[]'),
+      tags: parseJsonSafe(blog.tags, []),
       isFeatured: Boolean(blog.isFeatured),
       author: {
         name: blog.authorName,

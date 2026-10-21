@@ -2,31 +2,31 @@ const { getOne, query } = require('../config/database');
 
 class ProductRepository {
   async findAll({ category, search, onlyPublished = true } = {}) {
-    let sql = 'SELECT * FROM products WHERE 1=1';
+    let sql = 'SELECT * FROM PRODUCTS WHERE 1=1';
     const params = [];
 
     if (onlyPublished) {
-      sql += ' AND isPublished = 1';
+      sql += ' AND IS_PUBLISHED = 1';
     }
     if (category) {
-      sql += ' AND category = ?';
+      sql += ' AND CATEGORY = ?';
       params.push(category);
     }
     if (search) {
-      sql += ' AND (name LIKE ? OR tagline LIKE ? OR description LIKE ?)';
+      sql += ' AND (NAME LIKE ? OR TAGLINE LIKE ? OR DESCRIPTION LIKE ?)';
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
-    sql += ' ORDER BY createdAt DESC';
+    sql += ' ORDER BY CREATED_AT DESC';
     return query(sql, params);
   }
 
   async findById(id) {
-    return getOne('SELECT * FROM products WHERE id = ?', [id]);
+    return getOne('SELECT * FROM PRODUCTS WHERE ID = ?', [id]);
   }
 
   async findBySlug(slug) {
-    return getOne('SELECT * FROM products WHERE slug = ?', [slug]);
+    return getOne('SELECT * FROM PRODUCTS WHERE SLUG = ?', [slug]);
   }
 
   async create(product) {
@@ -46,7 +46,7 @@ class ProductRepository {
     } = product;
 
     await query(
-      `INSERT INTO products (id, name, slug, tagline, category, categoryName, basePrice, description, longDescription, techStack, featuredBadge, mockupType)
+      `INSERT INTO PRODUCTS (ID, NAME, SLUG, TAGLINE, CATEGORY, CATEGORY_NAME, BASE_PRICE, DESCRIPTION, LONG_DESCRIPTION, TECH_STACK, FEATURED_BADGE, MOCKUP_TYPE)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
@@ -83,10 +83,10 @@ class ProductRepository {
     } = product;
 
     await query(
-      `UPDATE products SET
-        name = ?, slug = ?, tagline = ?, category = ?, categoryName = ?, basePrice = ?,
-        description = ?, longDescription = ?, techStack = ?, featuredBadge = ?, mockupType = ?
-       WHERE id = ?`,
+      `UPDATE PRODUCTS SET
+        NAME = ?, SLUG = ?, TAGLINE = ?, CATEGORY = ?, CATEGORY_NAME = ?, BASE_PRICE = ?,
+        DESCRIPTION = ?, LONG_DESCRIPTION = ?, TECH_STACK = ?, FEATURED_BADGE = ?, MOCKUP_TYPE = ?
+       WHERE ID = ?`,
       [
         name,
         slug,
@@ -108,12 +108,12 @@ class ProductRepository {
 
   async togglePublish(id, currentStatus) {
     const newStatus = currentStatus ? 0 : 1;
-    await query('UPDATE products SET isPublished = ? WHERE id = ?', [newStatus, id]);
+    await query('UPDATE PRODUCTS SET IS_PUBLISHED = ? WHERE ID = ?', [newStatus, id]);
     return Boolean(newStatus);
   }
 
   async delete(id) {
-    const res = await query('DELETE FROM products WHERE id = ?', [id]);
+    const res = await query('DELETE FROM PRODUCTS WHERE ID = ?', [id]);
     return res.affectedRows > 0;
   }
 }

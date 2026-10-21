@@ -2,7 +2,7 @@ const { getOne, query } = require('../config/database');
 
 class SettingRepository {
   async getSettings() {
-    return getOne('SELECT * FROM site_settings WHERE id = 1');
+    return getOne('SELECT * FROM SITE_SETTINGS WHERE ID = 1');
   }
 
   async updateSettings(settings) {
@@ -21,11 +21,11 @@ class SettingRepository {
     } = settings;
 
     await query(
-      `UPDATE site_settings SET
-        brandName = ?, brandSubname = ?, slogan = ?, mainMessage = ?,
-        contactEmail = ?, supportEmail = ?, hotline = ?, address = ?,
-        workingHours = ?, socialLinks = ?, copyrightText = ?
-       WHERE id = 1`,
+      `UPDATE SITE_SETTINGS SET
+        BRAND_NAME = ?, BRAND_SUBNAME = ?, SLOGAN = ?, MAIN_MESSAGE = ?,
+        CONTACT_EMAIL = ?, SUPPORT_EMAIL = ?, HOTLINE = ?, ADDRESS = ?,
+        WORKING_HOURS = ?, SOCIAL_LINKS = ?, COPYRIGHT_TEXT = ?
+       WHERE ID = 1`,
       [
         brandName,
         brandSubname,
@@ -46,14 +46,14 @@ class SettingRepository {
 
   async getDashboardStats() {
     const totalOrdersRow = await getOne(
-      "SELECT SUM(total) as revenue, COUNT(id) as count FROM orders WHERE status != 'DEMO_CANCELLED'"
+      "SELECT SUM(TOTAL) as revenue, COUNT(ID) as count FROM ORDERS WHERE STATUS != 'DEMO_CANCELLED'"
     );
     const pendingOrdersRow = await getOne(
-      "SELECT COUNT(id) as count FROM orders WHERE status = 'DEMO_PENDING'"
+      "SELECT COUNT(ID) as count FROM ORDERS WHERE STATUS = 'DEMO_PENDING'"
     );
-    const totalProductsRow = await getOne('SELECT COUNT(id) as count FROM products');
+    const totalProductsRow = await getOne('SELECT COUNT(ID) as count FROM PRODUCTS');
     const newConsultationsRow = await getOne(
-      "SELECT COUNT(id) as count FROM consultations WHERE status = 'NEW'"
+      "SELECT COUNT(ID) as count FROM CONSULTATIONS WHERE STATUS = 'NEW'"
     );
 
     return {

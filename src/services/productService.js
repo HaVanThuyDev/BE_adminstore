@@ -1,6 +1,19 @@
 const productRepository = require('../repositories/productRepository');
 const { slugify } = require('../utils/helpers');
 
+const parseJsonSafe = (val, defaultVal = []) => {
+  if (Array.isArray(val)) return val;
+  if (typeof val === 'object' && val !== null) return val;
+  if (typeof val === 'string') {
+    try {
+      return JSON.parse(val);
+    } catch {
+      return defaultVal;
+    }
+  }
+  return defaultVal;
+};
+
 class ProductService {
   async getAllProducts(query = {}) {
     const onlyPublished = query.all !== 'true';
@@ -12,7 +25,7 @@ class ProductService {
 
     return rows.map((p) => ({
       ...p,
-      techStack: JSON.parse(p.techStack || '[]'),
+      techStack: parseJsonSafe(p.techStack, []),
       hasLiveDemo: Boolean(p.hasLiveDemo),
       isPublished: Boolean(p.isPublished),
     }));
@@ -25,7 +38,7 @@ class ProductService {
     }
     return {
       ...product,
-      techStack: JSON.parse(product.techStack || '[]'),
+      techStack: parseJsonSafe(product.techStack, []),
       hasLiveDemo: Boolean(product.hasLiveDemo),
       isPublished: Boolean(product.isPublished),
     };
