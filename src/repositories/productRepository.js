@@ -1,32 +1,42 @@
 const { getOne, query } = require('../config/database');
 
+const BASE_PRODUCT_SELECT = `
+  SELECT 
+    p.*,
+    COALESCE(ds.CLOUDINARY_URL, p.PREVIEW_IMAGE) AS PREVIEW_IMAGE,
+    ds.CLOUDINARY_URL AS CLOUDINARY_URL,
+    ds.FILE_NAME AS IMAGE_FILE_NAME
+  FROM PRODUCTS p
+  LEFT JOIN DATA_SOUSES ds ON p.DATA_SOURCE_ID = ds.ID
+`;
+
 class ProductRepository {
   async findAll({ category, search, onlyPublished = true } = {}) {
-    let sql = 'SELECT * FROM PRODUCTS WHERE 1=1';
+    let sql = `${BASE_PRODUCT_SELECT} WHERE 1=1`;
     const params = [];
 
     if (onlyPublished) {
-      sql += ' AND IS_PUBLISHED = 1';
+      sql += ' AND p.IS_PUBLISHED = 1';
     }
     if (category) {
-      sql += ' AND CATEGORY = ?';
+      sql += ' AND p.CATEGORY = ?';
       params.push(category);
     }
     if (search) {
-      sql += ' AND (NAME LIKE ? OR TAGLINE LIKE ? OR DESCRIPTION LIKE ?)';
+      sql += ' AND (p.NAME LIKE ? OR p.TAGLINE LIKE ? OR p.DESCRIPTION LIKE ?)';
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
-    sql += ' ORDER BY CREATED_AT DESC';
+    sql += ' ORDER BY p.CREATED_AT DESC';
     return query(sql, params);
   }
 
   async findById(id) {
-    return getOne('SELECT * FROM PRODUCTS WHERE ID = ?', [id]);
+    return getOne(`${BASE_PRODUCT_SELECT} WHERE p.ID = ?`, [id]);
   }
 
   async findBySlug(slug) {
-    return getOne('SELECT * FROM PRODUCTS WHERE SLUG = ?', [slug]);
+    return getOne(`${BASE_PRODUCT_SELECT} WHERE p.SLUG = ?`, [slug]);
   }
 
   async create(product) {
