@@ -3,6 +3,7 @@ const cors = require('cors');
 const config = require('./config/env');
 const routes = require('./routes');
 const { errorHandler } = require('./middlewares');
+const processOptimizer = require('./utils/processOptimizer');
 
 const app = express();
 
@@ -13,18 +14,20 @@ app.use(express.urlencoded({ extended: true }));
 
 // Request logging middleware
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log(`[${new Date().toISOString()}] [PID: ${process.pid}] ${req.method} ${req.url}`);
   next();
 });
 
-// Root API Health Check
+// Root API Health Check & System Multi-Core Metrics
 app.get('/', (req, res) => {
   res.json({
     success: true,
-    message: '🚀 2HT Technology Backend REST API (MySQL) is running!',
+    message: '🚀 2HT Technology Backend REST API (MySQL + Multi-Core + Cloudinary) is running!',
     version: '1.0.0',
+    system: processOptimizer.getSystemMetrics(),
     endpoints: {
       auth: '/api/v1/auth',
+      dataSources: '/api/v1/data-sources',
       headings: '/api/v1/headings',
       blogs: '/api/v1/blogs',
       products: '/api/v1/products',

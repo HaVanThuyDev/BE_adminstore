@@ -3,12 +3,22 @@ require('dotenv').config();
 const config = {
   env: process.env.NODE_ENV || 'development',
   port: parseInt(process.env.PORT || '5000', 10),
+  cluster: {
+    enabled: process.env.USE_CLUSTER === 'true',
+    workers: parseInt(process.env.CLUSTER_WORKERS || '0', 10),
+  },
   db: {
     host: process.env.DB_HOST || 'localhost',
     port: parseInt(process.env.DB_PORT || '3306', 10),
     user: process.env.DB_USER || 'root',
     password: process.env.DB_PASSWORD || '',
     database: process.env.DB_NAME || 'adminstore_db',
+  },
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME || '',
+    apiKey: process.env.CLOUDINARY_API_KEY || '',
+    apiSecret: process.env.CLOUDINARY_API_SECRET || '',
+    folder: process.env.CLOUDINARY_FOLDER || 'adminstore_media',
   },
   jwt: {
     secret: process.env.JWT_SECRET || 'super_secret_jwt_key_2ht_technology_2026_!@#',

@@ -17,7 +17,23 @@ const initMySQLTables = async () => {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `);
 
-  // 2. Products
+  // 2. Data Sources (Bảng data_souses quản lý tệp media, ảnh Cloudinary)
+  await query(`
+    CREATE TABLE IF NOT EXISTS data_souses (
+      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+      fileName VARCHAR(255) NOT NULL,
+      originalName VARCHAR(255) NOT NULL,
+      mimeType VARCHAR(100) NOT NULL,
+      fileSize BIGINT NOT NULL,
+      cloudinaryUrl VARCHAR(500) NULL,
+      publicId VARCHAR(255) NULL,
+      status VARCHAR(30) DEFAULT 'PENDING',
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  `);
+
+  // 3. Products
   await query(`
     CREATE TABLE IF NOT EXISTS products (
       id VARCHAR(50) PRIMARY KEY,
@@ -41,7 +57,7 @@ const initMySQLTables = async () => {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `);
 
-  // 3. Blogs (Quản lý bài viết)
+  // 4. Blogs (Quản lý bài viết)
   await query(`
     CREATE TABLE IF NOT EXISTS blogs (
       id VARCHAR(50) PRIMARY KEY,
@@ -64,7 +80,7 @@ const initMySQLTables = async () => {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `);
 
-  // 4. Site Headings (Quản lý tiêu đề website linh hoạt)
+  // 5. Site Headings (Quản lý tiêu đề website linh hoạt)
   await query(`
     CREATE TABLE IF NOT EXISTS site_headings (
       id VARCHAR(50) PRIMARY KEY,
@@ -79,7 +95,7 @@ const initMySQLTables = async () => {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `);
 
-  // 5. Orders (Đơn hàng mua bản quyền & dùng thử)
+  // 6. Orders (Đơn hàng mua bản quyền & dùng thử)
   await query(`
     CREATE TABLE IF NOT EXISTS orders (
       id VARCHAR(50) PRIMARY KEY,
@@ -97,7 +113,7 @@ const initMySQLTables = async () => {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `);
 
-  // 6. Consultations (Leads tư vấn giải pháp)
+  // 7. Consultations (Leads tư vấn giải pháp)
   await query(`
     CREATE TABLE IF NOT EXISTS consultations (
       id VARCHAR(50) PRIMARY KEY,
@@ -114,7 +130,7 @@ const initMySQLTables = async () => {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `);
 
-  // 7. Site Settings (Cấu hình thương hiệu)
+  // 8. Site Settings (Cấu hình thương hiệu)
   await query(`
     CREATE TABLE IF NOT EXISTS site_settings (
       id INT PRIMARY KEY DEFAULT 1,
@@ -132,7 +148,7 @@ const initMySQLTables = async () => {
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
   `);
 
-  console.log('✅ [Schema] Đã khởi tạo các bảng MySQL thành công!');
+  console.log('✅ [Schema] Đã khởi tạo các bảng MySQL (kèm data_souses) thành công!');
 };
 
 module.exports = {

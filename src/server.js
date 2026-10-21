@@ -1,42 +1,66 @@
+const cluster = require('cluster');
+const os = require('os');
 const app = require('./app');
 const config = require('./config/env');
 const { ensureDatabaseExists } = require('./config/database');
 const { initMySQLTables } = require('./models/schema');
 const { seedData } = require('./models/seed');
 
-const startServer = async () => {
-  try {
-    console.log('⏳ [Server] Đang kết nối MySQL Database...');
-    // 1. Đảm bảo Database tồn tại
-    await ensureDatabaseExists();
+const numCPUs = os.cpus().length;
+const totalWorkers = config.cluster.workers > 0 ? config.cluster.workers : numCPUs;
 
-    // 2. Khởi tạo các bảng MySQL
-    await initMySQLTables();
+// Khởi chạy hệ thống tận dụng đa nhân (Multi-Core Cluster)
+if (config.cluster.enabled && cluster.isPrimary) {
+  console.log(`\n======================================================`);
+  console.log(`👑 [Cluster Primary] Tiến trình chính đang chạy (PID: ${process.pid})`);
+  console.log(`⚡ [Multi-Core] Hệ thống phát hiện ${numCPUs} nhân CPU. Đang fork ${totalWorkers} workers...`);
+  console.log(`======================================================\n`);
 
-    // 3. Nạp dữ liệu mẫu ban đầu (Seeder)
-    await seedData();
+  // Chạy database migration & seed trước khi spawn các worker
+  (async () => {
+    try {
+      console.log('⏳ [Cluster Primary] Chuẩn bị cơ sở dữ liệu MySQL...');
+      await ensureDatabaseExists();
+      await initMySQLTables();
+      await seedData();
+      console.log('✅ [Cluster Primary] Database đã sẵn sàng! Bắt đầu phân phối workers.');
 
-    // 4. Lắng nghe Port
-    app.listen(config.port, () => {
-      console.log(`\n======================================================`);
-      console.log(`🚀 2HT Technology Backend Server (MySQL) is Running!`);
-      console.log(`📡 URL: http://localhost:${config.port}`);
-      console.log(`📋 API Docs & Endpoints: http://localhost:${config.port}/api/v1`);
-      console.log(`🔑 Super Admin Login: admin@2ht.vn / Password@2026`);
-      console.log(`💾 Database: ${config.db.host}:${config.db.port}/${config.db.database}`);
-      console.log(`======================================================\n`);
-    });
-  } catch (error) {
-    console.error('\n❌ [Server Error] Không thể kết nối hoặc khởi tạo MySQL Database:');
-    console.error('Chi tiết lỗi:', error.message);
-    console.error('\n👉 Vui lòng kiểm tra file .env:');
-    console.error(`- DB_HOST: ${config.db.host}`);
-    console.error(`- DB_PORT: ${config.db.port}`);
-    console.error(`- DB_USER: ${config.db.user}`);
-    console.error(`- DB_PASSWORD: (mật khẩu MySQL của bạn)`);
-    console.error(`- DB_NAME: ${config.db.database}\n`);
-    process.exit(1);
-  }
-};
+      // Fork các Worker process trên từng CPU Core
+      for (let i = 0; i < totalWorkers; i++) {
+        cluster.fork();
+      }
 
-startServer();
+      // Tự động hồi phục (Self-healing) nếu 1 worker bị crash
+      cluster.on('exit', (worker, code, signal) => {
+        console.warn(`⚠️ [Cluster Warning] Worker ${worker.process.pid} đã dừng (Code: ${code}, Signal: ${signal}). Đang khởi tạo worker mới thay thế...`);
+        cluster.fork();
+      });
+    } catch (err) {
+      console.error('❌ [Cluster Error] Lỗi khởi tạo Database tại Primary process:', err.message);
+      process.exit(1);
+    }
+  })();
+
+} else {
+  // Worker process hoặc Single-process mode
+  const startWorkerServer = async () => {
+    try {
+      // Nếu không bật cluster, tự khởi tạo DB ở process đơn
+      if (!config.cluster.enabled) {
+        await ensureDatabaseExists();
+        await initMySQLTables();
+        await seedData();
+      }
+
+      app.listen(config.port, () => {
+        const mode = config.cluster.enabled ? `Worker PID: ${process.pid}` : `Single Process PID: ${process.pid}`;
+        console.log(`🚀 [Server Ready] ${mode} đang lắng nghe tại: http://localhost:${config.port}`);
+      });
+    } catch (error) {
+      console.error(`❌ [Worker Error - PID: ${process.pid}]:`, error.message);
+      process.exit(1);
+    }
+  };
+
+  startWorkerServer();
+}
