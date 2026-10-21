@@ -201,7 +201,7 @@ INSERT INTO `USERS` (`ID`, `EMAIL`, `PASSWORD`, `FULL_NAME`, `PHONE`, `ROLE`, `S
 VALUES (
   'usr-admin-01',
   'admin@2ht.vn',
-  '$2a$10$f6F1W71J3YnZ44iY1l7ZseY8j2tV7W7LgqHh4H6GzXqXG9C.N/9lG',
+  '$2b$10$Z9VGLv.91qfHDW3GKUyg8u6YlCOTc5UolyCvzMikHuIne7c6TRqhi',
   'Quản Trị Viên 2HT',
   '0383717785',
   'SUPER_ADMIN',
