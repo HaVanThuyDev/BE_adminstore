@@ -69,6 +69,8 @@ CREATE TABLE IF NOT EXISTS `PRODUCTS` (
   `FEATURED_BADGE` VARCHAR(50) NULL COMMENT 'Huy hiệu nổi bật ghim trên thẻ (Ví dụ: Bán chạy nhất, Giải pháp Hot, Độc quyền)',
   `HAS_LIVE_DEMO` TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Cờ kiểm tra có môi trường Sandbox dùng thử hay không (1: Có, 0: Không)',
   `MOCKUP_TYPE` VARCHAR(50) NOT NULL DEFAULT 'business' COMMENT 'Loại khung mockup preview hiển thị giao diện: ecommerce, hrm, business, finance, website',
+  `PREVIEW_IMAGE` VARCHAR(500) NULL COMMENT 'Đường dẫn liên kết URL ảnh xem trước giao diện sản phẩm',
+  `DATA_SOURCE_ID` BIGINT NULL COMMENT 'Mã định danh ID số của ảnh lưu trong bảng DATA_SOUSES',
   `IS_PUBLISHED` TINYINT(1) NOT NULL DEFAULT 1 COMMENT 'Trạng thái hiển thị công khai trên website (1: Đang hiện, 0: Đang ẩn)',
   `RATING` DECIMAL(2, 1) NOT NULL DEFAULT 5.0 COMMENT 'Điểm đánh giá uy tín trung bình từ khách hàng (từ 1.0 đến 5.0)',
   `REVIEWS_COUNT` INT NOT NULL DEFAULT 1 COMMENT 'Tổng số lượt khách hàng đã gửi đánh giá phản hồi',

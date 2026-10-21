@@ -43,11 +43,13 @@ class ProductRepository {
       techStack,
       featuredBadge,
       mockupType,
+      previewImage,
+      dataSourceId,
     } = product;
 
     await query(
-      `INSERT INTO PRODUCTS (ID, NAME, SLUG, TAGLINE, CATEGORY, CATEGORY_NAME, BASE_PRICE, DESCRIPTION, LONG_DESCRIPTION, TECH_STACK, FEATURED_BADGE, MOCKUP_TYPE)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO PRODUCTS (ID, NAME, SLUG, TAGLINE, CATEGORY, CATEGORY_NAME, BASE_PRICE, DESCRIPTION, LONG_DESCRIPTION, TECH_STACK, FEATURED_BADGE, MOCKUP_TYPE, PREVIEW_IMAGE, DATA_SOURCE_ID)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         id,
         name,
@@ -61,6 +63,8 @@ class ProductRepository {
         techStack,
         featuredBadge,
         mockupType,
+        previewImage || null,
+        dataSourceId || null,
       ]
     );
 
@@ -80,12 +84,15 @@ class ProductRepository {
       techStack,
       featuredBadge,
       mockupType,
+      previewImage,
+      dataSourceId,
     } = product;
 
     await query(
       `UPDATE PRODUCTS SET
         NAME = ?, SLUG = ?, TAGLINE = ?, CATEGORY = ?, CATEGORY_NAME = ?, BASE_PRICE = ?,
-        DESCRIPTION = ?, LONG_DESCRIPTION = ?, TECH_STACK = ?, FEATURED_BADGE = ?, MOCKUP_TYPE = ?
+        DESCRIPTION = ?, LONG_DESCRIPTION = ?, TECH_STACK = ?, FEATURED_BADGE = ?, MOCKUP_TYPE = ?,
+        PREVIEW_IMAGE = COALESCE(?, PREVIEW_IMAGE), DATA_SOURCE_ID = COALESCE(?, DATA_SOURCE_ID)
        WHERE ID = ?`,
       [
         name,
@@ -99,6 +106,8 @@ class ProductRepository {
         techStack,
         featuredBadge,
         mockupType,
+        previewImage,
+        dataSourceId,
         id,
       ]
     );

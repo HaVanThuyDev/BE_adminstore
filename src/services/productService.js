@@ -79,6 +79,8 @@ class ProductService {
       techStack: techs,
       featuredBadge: data.featuredBadge || null,
       mockupType: data.mockupType || 'business',
+      previewImage: data.previewImage || null,
+      dataSourceId: data.dataSourceId || null,
     };
 
     return productRepository.create(product);
@@ -109,6 +111,8 @@ class ProductService {
       techStack: techs,
       featuredBadge: data.featuredBadge !== undefined ? data.featuredBadge : existing.featuredBadge,
       mockupType: data.mockupType || existing.mockupType,
+      previewImage: data.previewImage !== undefined ? data.previewImage : existing.previewImage,
+      dataSourceId: data.dataSourceId !== undefined ? data.dataSourceId : existing.dataSourceId,
     };
 
     return productRepository.update(id, updatedProduct);
