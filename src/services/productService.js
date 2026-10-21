@@ -25,6 +25,7 @@ class ProductService {
 
     return rows.map((p) => ({
       ...p,
+      basePrice: Number(p.basePrice) || 0,
       techStack: parseJsonSafe(p.techStack, []),
       hasLiveDemo: Boolean(p.hasLiveDemo),
       isPublished: Boolean(p.isPublished),
@@ -38,6 +39,7 @@ class ProductService {
     }
     return {
       ...product,
+      basePrice: Number(product.basePrice) || 0,
       techStack: parseJsonSafe(product.techStack, []),
       hasLiveDemo: Boolean(product.hasLiveDemo),
       isPublished: Boolean(product.isPublished),
